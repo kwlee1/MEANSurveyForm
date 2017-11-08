@@ -1,10 +1,43 @@
+<head>
+    <title>Survey Form</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+        $(document).ready(function (){
+        	// triggers the connection event in our server!
+            var socket = io.connect();
+            // submit data to the server using emit
+            $('#survey_form').submit(function(e) {
+        		e.preventDefault();
+				socket.emit("posting_form", {
+				  	name: $('#name').val(),
+                    location: $('#location').val(),
+                    language: $('#language').val(),
+                    comment: $('#comment').val()
+                });
+            });
+            socket.on('updated_message', function (data){
+			    $('#message').html("You emitted the following information to the server: " + JSON.stringify(data.response));
+			});
+			socket.on('random_number', function (data){
+			   $('#number').html("Your lucky number emitted by the server is : " + JSON.stringify(data.response));
+			});
+        });
+    </script>
+</head>
+
 <body>
+
+    <div id="message"></div>
+    <div id="number"></div>
+
     <h1>Survey Form </h1>
-    <form action="/result" method="post" name="survey">
-        Your Name: <input type="text" name="name"><br>
-        Dojo Location: <input type="text" name="dojo"><br>
-        Favorite Language: <input type="text" name="language"><br>
-        Comment: <textarea name="comment" cols="30" rows="10"></textarea>
+    <form action="" name="survey" id="survey_form">
+        Your Name: <input type="text" name="name" id="name"><br>
+        Dojo Location: <input type="text" name="dojo" id="location"><br>
+        Favorite Language: <input type="text" name="language" id="language"><br>
+        Comment: <textarea name="comment" cols="30" rows="10" id="comment"></textarea>
         <input type='submit' value='Create'>
     </form>
 </body>
